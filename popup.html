@@ -23,13 +23,35 @@
         table tr.off{
           background: #ffffff
         }
+        #tabbody div {
+          margin-top: -1px;        /* 上側にあるタブと1pxだけ重ねるために「-1px」を指定 */
+          position: relative;      /* z-indexを調整するために必要 */
+          z-index: 0;              /* 重なり順序を「最も背面」にするため */
+        }
       </style>
     </head>
     <body>
-     <h2> current tabs </h2>
-     <table class="current_tabs" border="0"> </table>
-     <button id="reload_button"> reload </button>
-     <button id="bookmark_button"> Bookmark! </button>
+      <div id="tabcontrol">
+        <a id="tabs">Tabs</a>
+        <a id="bookmarks">Bookmarks</a>
+        <a id="settings">Setting</a>
+      </div>
+      
+      <div id="tabbody">
+        <div id="tabs_tab">
+          <h2>Tabs</h2>
+          <table class="current_tabs" border="0"> </table>
+          <button id="reload_button"> reload </button>
+          <button id="bookmark_button"> Bookmark! </button>
+        </div>
+
+        <div id="bookmarks_tab">
+          <h2>Bookmarks</h2>
+        </div>
+
+        <div id="settings_tab">
+          <h2>Settings</h2>
+        </div>
+      </div>
     </body>
- 
   </html>

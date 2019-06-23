@@ -1,6 +1,8 @@
 var tabs　= []
 var tabs_marked = {}
 var it = 0
+
+
 function print_tabs_of_window(window){
     tabs = window.tabs
     console.log(window)
@@ -43,6 +45,39 @@ $(function(){
     $('#bookmark_button').click(function(){
         console.log("bookmark!");
         chrome.bookmarks.create({title: "testmake"})
-        
     });
 });
+
+
+var view_tabs;
+var pages;
+var current_page = "tabs_tab"
+
+$(function(){
+    console.log("")
+    console.log(document.getElementById('tabcontrol'))
+    view_tabs = document.getElementById('tabcontrol').getElementsByTagName('a');
+    pages = document.getElementById('tabbody').getElementsByTagName('div');
+});
+
+$(function(){
+    for(var page of pages){
+        if(current_page == page.id) page.style.display = "block"
+        else page.style.display = "none"
+    }
+});
+
+$(function(){
+    for(var tabc of view_tabs){
+        tabc.eventParam = tabc.id
+        tabc.addEventListener("click", change_tab, false)
+    }
+});
+
+function change_tab(){
+    current_page = this.eventParam+"_tab"
+    for(var page of pages){
+        if(current_page == page.id) page.style.display = "block"
+        else page.style.display = "none"
+    }
+}
