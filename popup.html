@@ -1,15 +1,35 @@
  <!DOCTYPE html>
+ <meta charset="utf-8" />
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js"> </script>
+ <script src="popup.js"></script>
   <html>
     <head>
       <style>
-        button {
-          height: 30px;
-          width: 30px;
-          outline: none;
+        body{
+          height: 400px;
+          width: 350px;
+        }
+        table{
+          width: 100%;
+          border-spacing: 0;
+        }
+        table td{
+          border-bottom: solid 2px #ddd;
+          text-align: left;
+        }
+        table tr.on{
+          background: rgba(171, 250, 189, 0.575)
+        }
+        table tr.off{
+          background: #ffffff
         }
       </style>
     </head>
     <body>
-      <button id="changeColor"></button>
+     <h2> current tabs </h2>
+     <table id="current_tabs" border="0"> </table>>
+     <button id="reload_button"> reload </button>
+     <button id="bookmark-button"> Bookmark! </button>
     </body>
+ 
   </html>
