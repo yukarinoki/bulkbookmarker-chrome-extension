@@ -4,9 +4,11 @@ function check_settings(){
         console.log("check_setting:")
         console.log(settings_obj)
         if(typeof settings_obj != "undefined" && typeof settings_obj.bulkbookmarker_settings.save_folder_id != "undefined"){
-            console.log("設定あり")
+            console.log("exist")
+            return true
         }else{
-            console.log("設定なし")
+            console.log("not exist")
+            return false
         }
     });
 }
@@ -85,9 +87,24 @@ $(function(){
 $(function(){
     $('#bookmark_button').click(function(){
         console.log("bookmark!");
-        chrome.bookmarks.create({title: "bulkbookmarker_folder"})
+        chrome.storage.sync.get("bulkbookmarker_settings", function(settings_obj){
+            if(typeof settings_obj === "undefined" || typeof settings_obj.bulkbookmarker_settings.save_folder_id === "undefined"){
+                document.getElementById("result").innerHTML = "No setings of bookmark folder"
+            }else{
+                var bkid = settings_obj.bulkbookmarker_settings.save_folder_id
+                var date = String(Date.now())
+                chrome.bookmarks.create({parentId: bkid, title: date}, function(res){
+                    for(var key in tabs_marked){
+                        var e = tabs_marked[key]
+                        if(e.flag) chrome.bookmarks.create({parentId: res.id, title: e.content.title, url: e.content.url})
+                    }
+                });
+                document.getElementById("result").innerHTML = (date + " bulked!")
+                reload_bookmarks_tab()
+            }
+        });
     });
-});
+})
 
 ////////////////////////////
 /*  Impl of Bookmark tab  */
@@ -118,7 +135,6 @@ function reload_bookmarks_tab(){
     });
 }
 
-
 function open_bulkbookmark(){
     var bkid = this.eventParam
     var url_arr = []
@@ -130,6 +146,7 @@ function open_bulkbookmark(){
         chrome.windows.create({url: url_arr})
     })
 }
+
 $(function(){
     reload_bookmarks_tab()
 });
