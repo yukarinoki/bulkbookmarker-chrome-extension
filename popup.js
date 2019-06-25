@@ -92,8 +92,8 @@ $(function(){
 ////////////////////////////
 /*  Impl of Bookmark tab  */
 ////////////////////////////
+
 function reload_bookmarks_tab(){
-    console.log("ここ")
     $('#bookmarks_area').empty()
     chrome.storage.sync.get("bulkbookmarker_settings", function(settings_obj){
         if(typeof settings_obj === "undefined" || typeof settings_obj.bulkbookmarker_settings === "undefined" || typeof settings_obj.bulkbookmarker_settings.save_folder_id === "undefined"){
@@ -133,9 +133,11 @@ function open_bulkbookmark(){
 $(function(){
     reload_bookmarks_tab()
 });
+
 ////////////////////////////
 /*  Impl of Settings tab  */
 ////////////////////////////
+
 var root_str = '.bookmark_view'
 
 function make_bookmark_view(arr_btn, str){
