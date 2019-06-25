@@ -1,9 +1,9 @@
 
 function check_settings(){
-    chrome.storage.sync.get("bulkbookmarker_settings", function(obj){
+    chrome.storage.sync.get("bulkbookmarker_settings", function(settings_obj){
         console.log("check_setting:")
-        console.log(obj)
-        if(typeof settings_obj !== "undefined" && typeof settings_obj.bulkbookmarker_settings.save_folder_id !== "undefined"){
+        console.log(settings_obj)
+        if(typeof settings_obj != "undefined" && typeof settings_obj.bulkbookmarker_settings.save_folder_id != "undefined"){
             console.log("設定あり")
         }else{
             console.log("設定なし")
@@ -85,15 +85,54 @@ $(function(){
 $(function(){
     $('#bookmark_button').click(function(){
         console.log("bookmark!");
-        chrome.bookmarks.create({title: "testmake"})
+        chrome.bookmarks.create({title: "bulkbookmarker_folder"})
     });
 });
 
 ////////////////////////////
 /*  Impl of Bookmark tab  */
 ////////////////////////////
+function reload_bookmarks_tab(){
+    console.log("ここ")
+    $('#bookmarks_area').empty()
+    chrome.storage.sync.get("bulkbookmarker_settings", function(settings_obj){
+        if(typeof settings_obj === "undefined" || typeof settings_obj.bulkbookmarker_settings === "undefined" || typeof settings_obj.bulkbookmarker_settings.save_folder_id === "undefined"){
+            $('#bookmarks_area').append("<tr><td> No setings of bookmark folder </tr><td>")
+        }else{
+            var current_id = settings_obj.bulkbookmarker_settings.save_folder_id
+            chrome.bookmarks.getChildren(current_id, function(arr){
+            var flag = false;
+            console.log(105)
+                for(var bk of arr){
+                    if(typeof bk.url === "undefined"){
+                        flag = true
+                        $('#bookmarks_area').append('<tr id=mybkid_' + bk.id + '><td>' + bk.title + "</td></tr>")
+                        var bookmark_elm = document.querySelector('#mybkid_'+bk.id)
+                        bookmark_elm.eventParam = bk.id
+                        bookmark_elm.addEventListener("dblclick", open_bulkbookmark, false)
+                    }
+                }
+                if(!flag) $('#bookmarks_area').append("<tr><td> No bulkbookmarks in that folder </tr><td>")
+            });
+        }
+    });
+}
 
 
+function open_bulkbookmark(){
+    var bkid = this.eventParam
+    var url_arr = []
+    chrome.bookmarks.getChildren(bkid, function(arr){
+        for(var bk of arr){
+            if(typeof bk.url !== "undefined") url_arr.push(bk.url)
+        }
+        console.log(url_arr)
+        chrome.windows.create({url: url_arr})
+    })
+}
+$(function(){
+    reload_bookmarks_tab()
+});
 ////////////////////////////
 /*  Impl of Settings tab  */
 ////////////////////////////
@@ -146,10 +185,10 @@ function folder_change_view(settings_obj){
     if(typeof settings_obj !== "undefined" && typeof settings_obj.save_folder_id !== "undefined"){
         chrome.bookmarks.get(settings_obj.save_folder_id, function(arr){
             var folder_name = arr[0].title
-            $('#bookmark_dir').append('<p>' + folder_name + '</p>')
+            $('#bookmark_dir').append('<p>　Save folder: ' + folder_name + '</p>')
         });
     }else{
-        $('#bookmark_dir').append('<p> No settings</p>')
+        $('#bookmark_dir').append('<p> Save folder:　No settings</p>')
     }
 }
 
@@ -161,10 +200,10 @@ function folder_setting_view(){
             var current_id = settings_obj.bulkbookmarker_settings.save_folder_id
             chrome.bookmarks.get(current_id, function(arr){
                 var folder_name = arr[0].title
-                $('#bookmark_dir').append('<p>' + folder_name + '</p>')
+                $('#bookmark_dir').append('<p> Save folder: ' + folder_name + '</p>')
             });
         }else{
-            $('#bookmark_dir').append('<p> No settings</p>')
+            $('#bookmark_dir').append('<p> Save folder: No settings</p>')
         }
     });
 }
