@@ -1,7 +1,7 @@
  {
-    "name": "Getting Started Example",
-    "version": "1.0",
-    "description": "Build an Extension!",
+    "name": "Bulk-Bookmarker",
+    "version": "2.0",
+    "description": "Bookmark All tab and Can Open It",
     "permissions":[
       "bookmarks",
       "tabs",
