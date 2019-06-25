@@ -117,9 +117,10 @@ function reload_bookmarks_tab(){
             $('#bookmarks_area').append("<tr><td> No setings of bookmark folder </tr><td>")
         }else{
             var current_id = settings_obj.bulkbookmarker_settings.save_folder_id
-            chrome.bookmarks.getChildren(current_id, function(arr){
+            chrome.bookmarks.getChildren(current_id, function(pre_arr){
             var flag = false;
             console.log(105)
+            var arr = pre_arr.reverse()
                 for(var bk of arr){
                     if(typeof bk.url === "undefined"){
                         flag = true
