@@ -1,8 +1,17 @@
-var settings
-function reload_settings(){
-    chrome.storage.local.get("bulkbookmarker_settings", function(obj){settings = obj});
+
+function check_settings(){
+    chrome.storage.sync.get("bulkbookmarker_settings", function(obj){
+        console.log("check_setting:")
+        console.log(obj)
+        if(typeof settings_obj !== "undefined" && typeof settings_obj.bulkbookmarker_settings.save_folder_id !== "undefined"){
+            console.log("設定あり")
+        }else{
+            console.log("設定なし")
+        }
+    });
 }
-reload_settings()
+check_settings()
+
 ////////////////////////////
 /*   Impl of Tab system   */
 ////////////////////////////
@@ -64,9 +73,6 @@ function change_mark(){
 
 chrome.windows.getCurrent({populate: true}, print_tabs_of_window)
 
-$(function(){ 
-    console.log("ほい");
-});
 
 $(function(){
     $('#reload_button').click(function(){
@@ -109,14 +115,22 @@ function make_bookmark_view(arr_btn, str){
 }
 
 function set_save_folder(){
-    if(typeof settings === "undefined"){
-        chrome.storage.sync.set({"bulkbookmarker_settings" : {save_folder_id: this.eventParam}}) 
-    }
-    else{
-        settings.save_folder_id = this.eventParam
-        chrome.storage.sync.set({"bulkbookmarker_settings": settings})
-        folder_setting_view()
-    }
+    var evp = this.eventParam
+    chrome.storage.sync.get("bulkbookmarker_settings", function(settings_obj){
+        console.log(settings_obj)
+        console.log(settings_obj.bulkbookmarker_settings.save_folder_id)
+        if(typeof settings_obj === "undefined" || typeof settings_obj.bulkbookmarker_settings === 'undefined' || typeof settings_obj.bulkbookmarker_settings.save_folder_id === "undefined"){
+            console.log("なし")
+            chrome.storage.sync.set({"bulkbookmarker_settings" : {save_folder_id: evp}}, folder_change_view({save_folder_id: evp})) 
+        }
+        else{
+            console.log("あり")
+            var new_settings_obj = settings_obj.bulkbookmarker_settings
+            new_settings_obj.save_folder_id = evp
+            console.log(new_settings_obj)
+            chrome.storage.sync.set({"bulkbookmarker_settings" : new_settings_obj}, folder_change_view(new_settings_obj))
+        }
+    })
 }
 
 $(function(){
@@ -126,10 +140,11 @@ $(function(){
     });
 });
 
-function folder_setting_view(folder_id){
+function folder_change_view(settings_obj){
     $('#bookmark_dir').empty()
-    if(typeof settings !== "undefined" && typeof settings.save_folder_id !== "undefined"){
-        chrome.bookmarks.get(settings.save_folder_id, function(arr){
+    console.log(settings_obj)
+    if(typeof settings_obj !== "undefined" && typeof settings_obj.save_folder_id !== "undefined"){
+        chrome.bookmarks.get(settings_obj.save_folder_id, function(arr){
             var folder_name = arr[0].title
             $('#bookmark_dir').append('<p>' + folder_name + '</p>')
         });
@@ -137,6 +152,23 @@ function folder_setting_view(folder_id){
         $('#bookmark_dir').append('<p> No settings</p>')
     }
 }
+
+function folder_setting_view(){
+    $('#bookmark_dir').empty()
+    chrome.storage.sync.get("bulkbookmarker_settings", function(settings_obj){
+        console.log(settings_obj)
+        if(typeof settings_obj !== "undefined" ||typeof settings_obj.bulkbookmarker_settings === 'undefined' || typeof settings_obj.bulkbookmarker_settings.save_folder_id !== "undefined"){
+            var current_id = settings_obj.bulkbookmarker_settings.save_folder_id
+            chrome.bookmarks.get(current_id, function(arr){
+                var folder_name = arr[0].title
+                $('#bookmark_dir').append('<p>' + folder_name + '</p>')
+            });
+        }else{
+            $('#bookmark_dir').append('<p> No settings</p>')
+        }
+    });
+}
+
 $(function(){
     folder_setting_view()
 });
