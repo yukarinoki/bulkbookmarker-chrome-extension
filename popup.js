@@ -165,7 +165,7 @@ function make_bookmark_view(arr_btn, str){
             
             var sel = document.querySelector("#"+"suid_"+btn.id)
             sel.eventParam = btn.id
-            sel.addEventListener('click', set_save_folder, false)
+            sel.addEventListener('dblclick', set_save_folder, false)
 
             var next_str = '#bkid_' + btn.id
             make_bookmark_view(btn.children, next_str)
