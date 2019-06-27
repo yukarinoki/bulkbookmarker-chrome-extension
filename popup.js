@@ -75,6 +75,17 @@ function change_mark(){
 
 chrome.windows.getCurrent({populate: true}, print_tabs_of_window)
 
+$(function(){
+    $('#close_button').click(function(){
+        console.log("close!");
+        var arrtb = []
+        for(var key in tabs_marked){
+            var e = tabs_marked[key]
+            if(e.flag) arrtb.push(e.content.id)
+        }
+        chrome.tabs.remove(arrtb)
+    });
+});
 
 $(function(){
     $('#reload_button').click(function(){
